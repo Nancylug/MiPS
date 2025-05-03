@@ -1,0 +1,12 @@
+body {
+  background-image: url('/assets/fondo.png'); /* Asegúrate de que la ruta sea correcta */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+
+
+
