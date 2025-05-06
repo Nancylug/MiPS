@@ -23,6 +23,7 @@ const LoginForm = () => {
     if (res.ok) {
       setMensaje('Login exitoso');
       localStorage.setItem('token', data.token);
+      localStorage.setItem('rol', data.rol);
       setIsAuthenticated(true);
       navigate('/usuarios'); // redirigir después del login
     } else {
