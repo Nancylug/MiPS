@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('./models/User');
+const User = require('./models/Usuario'); // Asegúrate de que el modelo de usuario está bien importado
 
 const app = express();
 app.use(cors());
@@ -24,24 +24,30 @@ app.post('/api/login', async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-  const token = jwt.sign({ userId: user._id, email: user.email }, 'secreto123', { expiresIn: '1h' });
-
-  res.json({ message: 'Login exitoso', token });
+  const token = jwt.sign(
+    { userId: user._id, email: user.email, rol: user.rol },  // AÑADIR rol aquí
+    'secreto123',
+    { expiresIn: '1h' }
+  );
+  
+  res.json({ message: 'Login exitoso', token, rol: user.rol }); // también se puede enviar explícitamente el rol
+  
 });
 
 // Rutas de Proveedores y Productos
 const proveedorRoutes = require('./routes/proveedores');
 const productoRoutes = require('./routes/productos');
+const clientesRoutes = require('./routes/clientes');
+const usuarioRoutes = require('./routes/usuarios'); // Asegúrate de que el archivo de rutas de usuarios esté bien importado
 
 // Se añaden las rutas a la app
 app.use('/api/proveedores', proveedorRoutes);
 app.use('/api/productos', productoRoutes);
+app.use('/api/clientes', clientesRoutes);
+app.use('/api/usuarios', usuarioRoutes); // Asegúrate de que esta línea esté presente
 
 // Iniciar el servidor
 app.listen(3001, () => {
   console.log('Servidor backend corriendo en http://localhost:3001');
 });
 
-//Ruta cliente
-const clientesRoutes = require('./routes/clientes');
-app.use('/api/clientes', clientesRoutes);
