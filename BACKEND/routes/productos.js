@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Producto = require('../models/Producto');
 const Proveedor = require('../models/Proveedor');
 
-// Obtener todos los productos con proveedor
+// ✅ Obtener todos los productos con proveedor
 router.get('/', async (req, res) => {
   try {
     const productos = await Producto.find().populate('proveedor');
@@ -15,22 +15,43 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Crear un nuevo producto
+// ✅ Crear un nuevo producto
 router.post('/', async (req, res) => {
   try {
-    const { nombre, categoria, precio, descripcion, cantidad, proveedor } = req.body;
+    const { nombre, descripcion, unidad, precioSinIVA, categoria, proveedor, stock } = req.body;
 
-    if (!proveedor) return res.status(400).send('Proveedor es obligatorio');
+    // Validación de campos obligatorios
+    if (!nombre || !unidad || !precioSinIVA || !proveedor) {
+      return res.status(400).send('Nombre, unidad, precioSinIVA y proveedor son obligatorios');
+    }
 
+    if (!mongoose.Types.ObjectId.isValid(proveedor)) {
+      return res.status(400).send('ID de proveedor inválido');
+    }
+
+    // Verificar que el proveedor exista
     const proveedorExistente = await Proveedor.findById(proveedor);
-    if (!proveedorExistente) return res.status(400).send('Proveedor no encontrado');
+    if (!proveedorExistente) {
+      return res.status(400).send('Proveedor no encontrado');
+    }
 
-    const nuevoProducto = new Producto({ nombre, categoria, precio, descripcion, cantidad, proveedor });
+    // Calcular precioConIVA si no se pasa
+    const precioConIVA = (precioSinIVA * 1.21).toFixed(2); // Suponiendo IVA del 21%
+
+    const nuevoProducto = new Producto({
+      nombre,
+      descripcion,
+      unidad,
+      precioSinIVA,
+      precioConIVA,  // Se guarda el precio con IVA calculado
+      categoria,
+      proveedor,
+      stock: stock ?? 0  // Si no se pasa stock, se asigna 0 por defecto
+    });
+
+    // Guardar el nuevo producto
     await nuevoProducto.save();
-
-    // 👉 Obtener el producto con el proveedor populado antes de enviar
     const productoPopulado = await Producto.findById(nuevoProducto._id).populate('proveedor');
-
     res.status(201).json(productoPopulado);
   } catch (err) {
     console.error('Error al guardar producto:', err);
@@ -38,41 +59,65 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar un producto
+// ✅ Actualizar un producto
 router.put('/:id', async (req, res) => {
   try {
-    const { nombre, categoria, precio, descripcion, cantidad, proveedor } = req.body;
+    const { nombre, descripcion, unidad, precioSinIVA, categoria, proveedor, stock } = req.body;
 
-    if (proveedor && !mongoose.Types.ObjectId.isValid(proveedor)) {
+    // Validación de campos obligatorios
+    if (!nombre || !unidad || !precioSinIVA || !proveedor) {
+      return res.status(400).send('Nombre, unidad, precioSinIVA y proveedor son obligatorios');
+    }
+
+    // Validar ID de producto
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send('ID de producto inválido');
+    }
+
+    // Validar ID de proveedor
+    if (!mongoose.Types.ObjectId.isValid(proveedor)) {
       return res.status(400).send('ID de proveedor inválido');
     }
 
-    if (proveedor) {
-      const proveedorExistente = await Proveedor.findById(proveedor);
-      if (!proveedorExistente) {
-        return res.status(400).send('Proveedor no encontrado');
-      }
+    const proveedorExistente = await Proveedor.findById(proveedor);
+    if (!proveedorExistente) {
+      return res.status(400).send('Proveedor no encontrado');
     }
 
-    await Producto.findByIdAndUpdate(
+    // Calcular precioConIVA si no se pasa
+    const precioConIVA = (precioSinIVA * 1.21).toFixed(2); // Suponiendo IVA del 21%
+
+    // Actualizar el producto
+    const productoActualizado = await Producto.findByIdAndUpdate(
       req.params.id,
-      { nombre, categoria, precio, descripcion, cantidad, proveedor },
+      {
+        nombre,
+        descripcion,
+        unidad,
+        precioSinIVA,
+        precioConIVA,  // Actualizar el precio con IVA
+        categoria,
+        proveedor,
+        stock: stock ?? 0  // Si no se pasa stock, se asigna 0 por defecto
+      },
       { new: true }
-    );
+    ).populate('proveedor');  // Populamos el proveedor actualizado
 
-    // 👉 Obtener el producto actualizado con proveedor populado
-    const productoPopulado = await Producto.findById(req.params.id).populate('proveedor');
-
-    res.json(productoPopulado);
+    res.json(productoActualizado);
   } catch (err) {
     console.error('Error al actualizar producto:', err);
     res.status(400).send('Error al actualizar producto');
   }
 });
 
-// Eliminar un producto
+// ✅ Eliminar un producto
 router.delete('/:id', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send('ID de producto inválido');
+    }
+
+    // Eliminar el producto
     await Producto.findByIdAndDelete(req.params.id);
     res.status(200).send('Producto eliminado');
   } catch (err) {
