@@ -24,11 +24,12 @@ app.post('/api/login', async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-  const token = jwt.sign(
-    { userId: user._id, email: user.email, rol: user.rol },  // AÑADIR rol aquí
-    'secreto123',
-    { expiresIn: '1h' }
-  );
+ const token = jwt.sign(
+  { userId: user._id, email: user.email, rol: user.rol, nombre: user.nombre },
+  'secreto123',
+  { expiresIn: '1h' }
+);
+
   
   res.json({ message: 'Login exitoso', token, rol: user.rol }); // también se puede enviar explícitamente el rol
   
