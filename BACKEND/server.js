@@ -46,6 +46,30 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/clientes', clientesRoutes);
 app.use('/api/usuarios', usuarioRoutes); // Asegúrate de que esta línea esté presente
 
+// Ruta para verificar el token
+app.post('/api/verify-token', (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ message: 'Token requerido' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, 'secreto123');
+    res.status(200).json({
+      message: 'Token válido',
+      user: {
+        userId: decoded.userId,
+        email: decoded.email,
+        rol: decoded.rol
+      }
+    });
+  } catch (err) {
+    res.status(401).json({ message: 'Token no válido', error: err.message });
+  }
+});
+
+
 // Iniciar el servidor
 app.listen(3001, () => {
   console.log('Servidor backend corriendo en http://localhost:3001');
