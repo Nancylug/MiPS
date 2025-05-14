@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
@@ -61,8 +63,37 @@ const Clientes = () => {
     }
   };
 
+  const generarPDF = () => {
+    const doc = new jsPDF();
+    const fecha = new Date().toLocaleDateString();
+
+    const img = new Image();
+    img.src = '/assets/logo.png'; // debe estar en public/assets/logo.png
+
+    img.onload = () => {
+      doc.addImage(img, 'PNG', 10, 10, 30, 30);
+      doc.setFontSize(16);
+      doc.text('Listado de Clientes', 50, 20);
+      doc.setFontSize(10);
+      doc.text(`Fecha: ${fecha}`, 50, 28);
+
+      autoTable(doc, {
+        startY: 45,
+        head: [['Nombre', 'Email', 'Teléfono', 'Dirección']],
+        body: clientes.map(cliente => [
+          cliente.nombre,
+          cliente.email,
+          cliente.telefono,
+          cliente.direccion
+        ])
+      });
+
+      doc.save('clientes.pdf');
+    };
+  };
+
   return (
-    <div>
+    <div className="container my-4">
       <h2>Clientes</h2>
 
       <form onSubmit={handleSubmit} className="mb-4">
@@ -99,6 +130,12 @@ const Clientes = () => {
           </button>
         )}
       </form>
+
+      <div className="mb-3 text-start">
+        <button className="btn btn-primary" onClick={generarPDF}>
+          Descargar PDF
+        </button>
+      </div>
 
       <h4>Listado de Clientes</h4>
       <table className="table table-striped table-bordered">

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -125,11 +127,54 @@ const Productos = () => {
     setEditandoId(null);
   };
 
+  const generarPDF = () => {
+    const doc = new jsPDF();
+
+    const logo = new Image();
+    logo.src = '/assets/logo.png'; // Ruta del logo
+
+    logo.onload = () => {
+      // Agregar logo (x, y, width, height)
+      doc.addImage(logo, 'PNG', 10, 10, 30, 30);
+
+      // Título y fecha
+      doc.setFontSize(16);
+      doc.text('Listado de Productos', 50, 20);
+
+      const fecha = new Date().toLocaleString();
+      doc.setFontSize(10);
+      doc.text(`Generado el: ${fecha}`, 50, 28);
+
+      // Tabla de productos
+      autoTable(doc, {
+        startY: 50,
+        head: [
+          ['Nombre', 'Categoría', 'Precio Sin IVA', 'Precio Con IVA', 'Unidad', 'Descripción', 'Proveedor', 'Stock', 'Fecha']
+        ],
+        body: productos.map(p => [
+          p.nombre,
+          p.categoria,
+          p.precioSinIVA,
+          p.precioConIVA,
+          p.unidad,
+          p.descripcion,
+          p.proveedor?.nombre,
+          p.stock,
+          new Date(p.fecha).toLocaleDateString()  // Mostrar la fecha en formato legible
+        ]),
+        styles: { fontSize: 9 }
+      });
+
+      doc.save('productos.pdf');
+    };
+  };
+
   return (
     <div className="container my-4">
       <h2 className="mb-4">Productos</h2>
 
       <form onSubmit={handleSubmit} className="row g-3">
+        {/* Formulario de productos */}
         <div className="col-md-6">
           <label className="form-label">Nombre</label>
           <input
@@ -275,6 +320,9 @@ const Productos = () => {
           )}
         </div>
       </form>
+       <button className="btn btn-primary mt-4" onClick={generarPDF}>
+        Descargar PDF
+      </button>
 
       <h4 className="mt-5">Listado de productos</h4>
       <div className="table-responsive">
@@ -289,32 +337,32 @@ const Productos = () => {
               <th>Descripción</th>
               <th>Proveedor</th>
               <th>Stock</th>
-              <th>Fecha</th> {/* Nueva columna para la fecha */}
+              <th>Fecha</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {productos.map((prod) => (
-              <tr key={prod._id}>
-                <td>{prod.nombre}</td>
-                <td>{prod.categoria}</td>
-                <td>{prod.precioSinIVA}</td>
-                <td>{prod.precioConIVA}</td>
-                <td>{prod.unidad}</td>
-                <td>{prod.descripcion}</td>
-                <td>{prod.proveedor?.nombre}</td>
-                <td>{prod.stock}</td>
-                <td>{new Date(prod.fecha).toLocaleDateString()}</td> {/* Mostrar la fecha */}
+            {productos.map((producto) => (
+              <tr key={producto._id}>
+                <td>{producto.nombre}</td>
+                <td>{producto.categoria}</td>
+                <td>{producto.precioSinIVA}</td>
+                <td>{producto.precioConIVA}</td>
+                <td>{producto.unidad}</td>
+                <td>{producto.descripcion}</td>
+                <td>{producto.proveedor?.nombre}</td>
+                <td>{producto.stock}</td>
+                <td>{new Date(producto.fecha).toLocaleDateString()}</td>
                 <td>
                   <button
                     className="btn btn-warning btn-sm"
-                    onClick={() => handleEditar(prod)}
+                    onClick={() => handleEditar(producto)}
                   >
                     Editar
                   </button>
                   <button
                     className="btn btn-danger btn-sm ms-2"
-                    onClick={() => handleEliminar(prod._id)}
+                    onClick={() => handleEliminar(producto._id)}
                   >
                     Eliminar
                   </button>
@@ -324,11 +372,13 @@ const Productos = () => {
           </tbody>
         </table>
       </div>
+     
     </div>
   );
 };
 
 export default Productos;
+
 
 
 

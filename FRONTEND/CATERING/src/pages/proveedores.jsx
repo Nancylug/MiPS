@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const Proveedores = () => {
   const [proveedores, setProveedores] = useState([]);
@@ -12,7 +14,7 @@ const Proveedores = () => {
     observaciones: ''
   });
 
-  const [editandoId, setEditandoId] = useState(null); // 👈 ID del proveedor en edición
+  const [editandoId, setEditandoId] = useState(null);
 
   useEffect(() => {
     obtenerProveedores();
@@ -35,14 +37,11 @@ const Proveedores = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        // Evitar enviar el _id en la solicitud PUT
-        const { _id, ...datosSinId } = nuevo;  // Eliminamos el _id del objeto
-      
+        const { _id, ...datosSinId } = nuevo;
         const res = await axios.put(`http://localhost:3001/api/proveedores/${editandoId}`, datosSinId);
         setProveedores(proveedores.map(p => p._id === editandoId ? res.data : p));
         setEditandoId(null);
       } else {
-        // Crear nuevo proveedor
         const res = await axios.post('http://localhost:3001/api/proveedores', nuevo);
         setProveedores([...proveedores, res.data]);
       }
@@ -75,6 +74,43 @@ const Proveedores = () => {
     }
   };
 
+  const generarPDF = () => {
+    const doc = new jsPDF();
+
+    const logo = new Image();
+    logo.src = '/assets/logo.png'; 
+
+    logo.onload = () => {
+      // Logo (x, y, width, height)
+      doc.addImage(logo, 'PNG', 10, 10, 30, 30);
+
+      // Título y fecha
+      doc.setFontSize(16);
+      doc.text('Listado de Proveedores', 50, 20);
+
+      const fecha = new Date().toLocaleString();
+      doc.setFontSize(10);
+      doc.text(`Generado el: ${fecha}`, 50, 28);
+
+      // Tabla
+      autoTable(doc, {
+        startY: 50,
+        head: [['Nombre', 'Rubro', 'Teléfono', 'Email', 'Dirección', 'Observaciones']],
+        body: proveedores.map(p => [
+          p.nombre,
+          p.rubro,
+          p.telefono,
+          p.email,
+          p.direccion,
+          p.observaciones
+        ]),
+        styles: { fontSize: 9 }
+      });
+
+      doc.save('proveedores.pdf');
+    };
+  };
+
   return (
     <div>
       <h2>Proveedores</h2>
@@ -105,13 +141,26 @@ const Proveedores = () => {
             className="btn btn-secondary ms-2"
             onClick={() => {
               setEditandoId(null);
-              setNuevo({ nombre: '', rubro: '', telefono: '', email: '', direccion: '', observaciones: '' });
+              setNuevo({
+                nombre: '',
+                rubro: '',
+                telefono: '',
+                email: '',
+                direccion: '',
+                observaciones: ''
+              });
             }}
           >
             Cancelar
           </button>
         )}
       </form>
+
+      <div className="mb-3">
+        <button className="btn btn-primary" onClick={generarPDF}>
+          Descargar PDF
+        </button>
+      </div>
 
       <h4>Listado</h4>
       <table className="table table-striped table-bordered">
@@ -148,4 +197,3 @@ const Proveedores = () => {
 };
 
 export default Proveedores;
-
