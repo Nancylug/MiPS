@@ -1,19 +1,7 @@
 
-// import React from "react";
-// import LoginPage from "./pages/LoginPage";
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
-// const App = () => {
-//   return <LoginPage />;
-// };
-
-// export default App;
-
-// src/App.jsx
-// src/App.jsx
-// src/App.jsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 
 import LoginPage from './pages/LoginPage';
@@ -23,8 +11,15 @@ import Clientes from './pages/Clientes';
 import Productos from './pages/Productos';
 import Administracion from './pages/Administracion';
 
-import { AuthProvider } from './context/AuthContext';
-import PrivateRoute from './components/PrivateRoute'; // 👈 importar
+import { AuthProvider, AuthContext } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
+
+const Inicio = () => {
+  const { isAuthenticated } = useContext(AuthContext);
+  const ultimaRuta = localStorage.getItem('ultimaRuta') || '/clientes';
+
+  return isAuthenticated ? <Navigate to={ultimaRuta} /> : <LoginPage />;
+};
 
 const App = () => {
   return (
@@ -33,22 +28,12 @@ const App = () => {
         <Navbar />
         <div className="container mt-4">
           <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/usuarios" element={
-              <PrivateRoute><Usuarios /></PrivateRoute>
-            } />
-            <Route path="/proveedores" element={
-              <PrivateRoute><Proveedores /></PrivateRoute>
-            } />
-            <Route path="/clientes" element={
-              <PrivateRoute><Clientes /></PrivateRoute>
-            } />
-            <Route path="/productos" element={
-              <PrivateRoute><Productos /></PrivateRoute>
-            } />
-            <Route path="/administracion" element={
-              <PrivateRoute><Administracion /></PrivateRoute>
-            } />
+            <Route path="/" element={<Inicio />} />
+            <Route path="/usuarios" element={<PrivateRoute><Usuarios /></PrivateRoute>} />
+            <Route path="/proveedores" element={<PrivateRoute><Proveedores /></PrivateRoute>} />
+            <Route path="/clientes" element={<PrivateRoute><Clientes /></PrivateRoute>} />
+            <Route path="/productos" element={<PrivateRoute><Productos /></PrivateRoute>} />
+            <Route path="/administracion" element={<PrivateRoute><Administracion /></PrivateRoute>} />
           </Routes>
         </div>
       </Router>
@@ -57,3 +42,4 @@ const App = () => {
 };
 
 export default App;
+
