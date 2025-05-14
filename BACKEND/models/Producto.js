@@ -12,7 +12,7 @@ const productoSchema = new mongoose.Schema({
   },
   unidad: {
     type: String,
-    enum: ['kg', 'unidad', 'litro', 'paquete'],
+    enum: ['kg', 'unidad', 'litro', 'paquete','molde', 'bolson','jaula','bandeja','bolsax400','caja','bidonx5'],
     required: true
   },
   precioSinIVA: {
