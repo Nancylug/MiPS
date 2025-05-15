@@ -30,7 +30,7 @@ const Navbar = () => {
           <div className="d-flex align-items-center gap-2">
             <span className="navbar-text text-white">
               
-           Bienvenido  {usuario?.nombre}
+           Bienvenido {usuario?.nombre}
             </span>
 
             <button className="btn btn-danger btn-sm" onClick={handleLogout}>Cerrar sesión</button>
