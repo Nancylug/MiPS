@@ -10,57 +10,52 @@ import Productos from './pages/Productos';
 import Administracion from './pages/Administracion';
 import Bienvenida from './pages/Bienvenida';
 
-
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 
 const AppRoutes = () => {
-const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
 
-return (
-<Routes>
-    <Route path="/" element={ isAuthenticated ? <Navigate to="/bienvenida" /> :
-    <LoginPage />
-    } />
-    <Route path="/bienvenida" element={ <PrivateRoute>
-        <Bienvenida />
-        </PrivateRoute>
-        } />
-        <Route path="/usuarios" element={ <PrivateRoute>
-            <Usuarios />
-            </PrivateRoute>
-            } />
-            <Route path="/proveedores" element={ <PrivateRoute>
-                <Proveedores />
-                </PrivateRoute>
-                } />
-                <Route path="/clientes" element={ <PrivateRoute>
-                    <Clientes />
-                    </PrivateRoute>
-                    } />
-                    <Route path="/productos" element={ <PrivateRoute>
-                        <Productos />
-                        </PrivateRoute>
-                        } />
-                        <Route path="/administracion" element={ <PrivateRoute>
-                            <Administracion />
-                            </PrivateRoute>
-                            } />
-</Routes>
-);
+  return (
+    <Routes>
+      <Route path="/" element={
+        isAuthenticated ? <Navigate to="/bienvenida" /> : <LoginPage />
+      } />
+      <Route path="/bienvenida" element={
+        <PrivateRoute><Bienvenida /></PrivateRoute>
+      } />
+      <Route path="/usuarios" element={
+        <PrivateRoute><Usuarios /></PrivateRoute>
+      } />
+      <Route path="/proveedores" element={
+        <PrivateRoute><Proveedores /></PrivateRoute>
+      } />
+      <Route path="/clientes" element={
+        <PrivateRoute><Clientes /></PrivateRoute>
+      } />
+      <Route path="/productos" element={
+        <PrivateRoute><Productos /></PrivateRoute>
+      } />
+      <Route path="/administracion" element={
+        <PrivateRoute><Administracion /></PrivateRoute>
+      } />
+    </Routes>
+  );
 };
 
 const App = () => {
-return (
-<AuthProvider>
-    <Router>
+  return (
+    <AuthProvider>
+      <Router>
         <Navbar />
         <div className="container mt-4">
-            <AppRoutes />
+          <AppRoutes />
         </div>
-    </Router>
-</AuthProvider>
-);
+      </Router>
+    </AuthProvider>
+  );
 };
 
 export default App;
+
+
