@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config(); // 🔐 Carga variables del archivo .env
+const path = require('path');
+require('dotenv').config(); // Carga variables del archivo .env
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,10 +19,10 @@ mongoose.connect(process.env.MONGO_URI, {
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch((err) => {
     console.error('❌ Error conectando a MongoDB:', err);
-    process.exit(1); // Detiene la app si no se puede conectar
+    process.exit(1); // Detener app si no conecta
   });
 
-// Modelo simple de ejemplo (puede ir en otra carpeta como models/)
+// Modelo simple (puedes moverlo a /models)
 const ItemSchema = new mongoose.Schema({
   name: String,
   description: String,
@@ -29,7 +30,7 @@ const ItemSchema = new mongoose.Schema({
 
 const Item = mongoose.model('Item', ItemSchema);
 
-// Rutas de la API
+// Rutas API
 app.post('/api/items', async (req, res) => {
   try {
     const newItem = new Item(req.body);
@@ -53,7 +54,15 @@ app.get('/api/items', async (req, res) => {
 const menuRoutes = require('./routes/menus');
 app.use('/api/menus', menuRoutes);
 
-// Servidor
+// --- Opcional: servir frontend React en producción ---
+// if (process.env.NODE_ENV === 'production') {
+//   app.use(express.static(path.join(__dirname, 'frontend/dist')));
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'));
+//   });
+// }
+
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
