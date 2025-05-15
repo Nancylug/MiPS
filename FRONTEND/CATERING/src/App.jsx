@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/NavBar';
 import LoginPage from './pages/LoginPage';
 import Usuarios from './pages/Usuarios';
-import Proveedores from './pages/Proveedores';
+import Proveedores from './pages/proveedores';
 import Clientes from './pages/Clientes';
-import Productos from './pages/Productos';
+import Productos from './pages/productos';
 import Administracion from './pages/Administracion';
 import Bienvenida from './pages/Bienvenida';
 import { AuthProvider, AuthContext } from './context/AuthContext';
