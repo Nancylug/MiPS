@@ -24,7 +24,7 @@ const Navbar = () => {
             <li className="nav-item"><Link className="nav-link" to="/proveedores">Proveedores</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/clientes">Clientes</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/productos">Productos</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/administracion">Administración</Link></li>
+            <li className="nav-item"><Link className="nav-link" to="/administracion">Menú</Link></li>
           </ul>
 
           <div className="d-flex align-items-center gap-2">
