@@ -155,7 +155,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = import.meta.env.VITE_API_URL; // Cambio aquí para Vite
 
 const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -171,7 +171,7 @@ const Usuarios = () => {
 
   const obtenerUsuarios = async () => {
     try {
-      const res = await axios.get(`${API_URL}/usuarios`);
+      const res = await axios.get(`${API_URL}/api/usuarios`); // Añadí /api
       setUsuarios(res.data);
     } catch (err) {
       console.error('Error al obtener usuarios:', err);
@@ -188,11 +188,11 @@ const Usuarios = () => {
       const datos = { ...nuevo };
       if (editandoId) {
         const { _id, ...datosSinId } = datos;
-        const res = await axios.put(`${API_URL}/usuarios/${editandoId}`, datosSinId);
+        const res = await axios.put(`${API_URL}/api/usuarios/${editandoId}`, datosSinId);
         setUsuarios(usuarios.map(u => u._id === editandoId ? res.data : u));
         setEditandoId(null);
       } else {
-        const res = await axios.post(`${API_URL}/usuarios`, datos);
+        const res = await axios.post(`${API_URL}/api/usuarios`, datos);
         setUsuarios([...usuarios, res.data]);
       }
       setNuevo({ nombre: '', email: '', rol: '', password: '' });
@@ -209,7 +209,7 @@ const Usuarios = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este usuario?')) {
       try {
-        await axios.delete(`${API_URL}/usuarios/${id}`);
+        await axios.delete(`${API_URL}/api/usuarios/${id}`);
         setUsuarios(usuarios.filter(u => u._id !== id));
       } catch (err) {
         console.error('Error al eliminar usuario:', err);
