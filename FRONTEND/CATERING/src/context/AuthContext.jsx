@@ -1,41 +1,52 @@
 // import { createContext, useState, useEffect } from 'react';
 // import axios from 'axios';
+// import { jwtDecode } from 'jwt-decode';
 
-// export const AuthContext = createContext();
+// const AuthContext = createContext();
 
-// export const AuthProvider = ({ children }) => {
+// const AuthProvider = ({ children }) => {
 //   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [usuario, setUsuario] = useState(null);
 
 //   useEffect(() => {
-//     const token = localStorage.getItem('token');
+//     const verificarToken = async () => {
+//       const token = localStorage.getItem('token');
+//       if (!token) {
+//         setIsAuthenticated(false);
+//         setUsuario(null);
+//         return;
+//       }
 
-//     if (token) {
-//       // Verificar si el token es válido
-//       axios
-//         .post('http://localhost:3001/api/verify-token', { token })
-//         .then((response) => {
-//           // Si el token es válido, actualizar el estado
-//           setIsAuthenticated(true);
-//         })
-//         .catch((error) => {
-//           // Si el token no es válido, actualizar el estado
-//           setIsAuthenticated(false);
-//         });
-//     }
+//       try {
+//         await axios.post('http://localhost:3001/api/verify-token', { token });
+//         setIsAuthenticated(true);
+//         const decoded = jwtDecode(token);
+//         setUsuario(decoded);
+//       } catch (error) {
+//         console.error('Token inválido o expirado');
+//         setIsAuthenticated(false);
+//         setUsuario(null);
+//       }
+//     };
+
+//     verificarToken();
 //   }, []);
 
 //   return (
-//     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+//     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, usuario }}>
 //       {children}
 //     </AuthContext.Provider>
 //   );
 // };
+
+// export { AuthContext, AuthProvider };
 
 import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -51,7 +62,7 @@ const AuthProvider = ({ children }) => {
       }
 
       try {
-        await axios.post('http://localhost:3001/api/verify-token', { token });
+        await axios.post(`${API_URL}/api/verify-token`, { token });
         setIsAuthenticated(true);
         const decoded = jwtDecode(token);
         setUsuario(decoded);
@@ -73,5 +84,4 @@ const AuthProvider = ({ children }) => {
 };
 
 export { AuthContext, AuthProvider };
-
 

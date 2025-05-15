@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const LoginForm = () => {
   const { setIsAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('http://localhost:3001/api/login', {
+    const res = await fetch(`${API_URL}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -25,7 +27,7 @@ const LoginForm = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('rol', data.rol);
       setIsAuthenticated(true);
-      navigate('/usuarios'); // redirigir después del login
+      navigate('/usuarios');
     } else {
       setMensaje(data.message || 'Error de login');
     }
@@ -49,3 +51,4 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
