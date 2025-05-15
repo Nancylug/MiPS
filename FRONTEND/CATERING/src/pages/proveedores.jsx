@@ -16,13 +16,16 @@ const Proveedores = () => {
 
   const [editandoId, setEditandoId] = useState(null);
 
+  // URL base para la API, tomada de la variable de entorno o fallback localhost
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
   useEffect(() => {
     obtenerProveedores();
   }, []);
 
   const obtenerProveedores = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/api/proveedores');
+      const res = await axios.get(`${API_URL}/api/proveedores`);
       setProveedores(res.data);
     } catch (err) {
       console.error('Error al obtener proveedores:', err);
@@ -38,11 +41,11 @@ const Proveedores = () => {
     try {
       if (editandoId) {
         const { _id, ...datosSinId } = nuevo;
-        const res = await axios.put(`http://localhost:3001/api/proveedores/${editandoId}`, datosSinId);
+        const res = await axios.put(`${API_URL}/api/proveedores/${editandoId}`, datosSinId);
         setProveedores(proveedores.map(p => p._id === editandoId ? res.data : p));
         setEditandoId(null);
       } else {
-        const res = await axios.post('http://localhost:3001/api/proveedores', nuevo);
+        const res = await axios.post(`${API_URL}/api/proveedores`, nuevo);
         setProveedores([...proveedores, res.data]);
       }
       setNuevo({
@@ -66,7 +69,7 @@ const Proveedores = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este proveedor?')) {
       try {
-        await axios.delete(`http://localhost:3001/api/proveedores/${id}`);
+        await axios.delete(`${API_URL}/api/proveedores/${id}`);
         setProveedores(proveedores.filter(p => p._id !== id));
       } catch (err) {
         console.error('Error al eliminar proveedor:', err);
@@ -78,13 +81,11 @@ const Proveedores = () => {
     const doc = new jsPDF();
 
     const logo = new Image();
-    logo.src = '/assets/logo.png'; 
+    logo.src = '/assets/logo.png';
 
     logo.onload = () => {
-      // Logo (x, y, width, height)
       doc.addImage(logo, 'PNG', 10, 10, 30, 30);
 
-      // Título y fecha
       doc.setFontSize(16);
       doc.text('Listado de Proveedores', 50, 20);
 
@@ -92,7 +93,6 @@ const Proveedores = () => {
       doc.setFontSize(10);
       doc.text(`Generado el: ${fecha}`, 50, 28);
 
-      // Tabla
       autoTable(doc, {
         startY: 50,
         head: [['Nombre', 'Rubro', 'Teléfono', 'Email', 'Dirección', 'Observaciones']],
