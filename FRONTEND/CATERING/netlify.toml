@@ -1,0 +1,4 @@
+[build]
+  base = "FRONTEND/CATERING"
+  publish = "FRONTEND/CATERING/dist"
+  command = "npm run build"

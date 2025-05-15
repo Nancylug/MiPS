@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
-
+import Navbar from './components/NavBar';
 import LoginPage from './pages/LoginPage';
 import Usuarios from './pages/Usuarios';
 import Proveedores from './pages/Proveedores';
@@ -9,13 +8,12 @@ import Clientes from './pages/Clientes';
 import Productos from './pages/Productos';
 import Administracion from './pages/Administracion';
 import Bienvenida from './pages/Bienvenida';
-
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useContext(AuthContext);
-
+//rutas
   return (
     <Routes>
       <Route path="/" element={
