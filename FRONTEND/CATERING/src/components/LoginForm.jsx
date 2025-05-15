@@ -1,47 +1,3 @@
-// import { useState } from "react";
-
-// const LoginForm = () => {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     console.log("Email:", email);
-//     console.log("Password:", password);
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <div className="mb-3">
-//         <label className="form-label">Correo Electrónico</label>
-//         <input
-//           type="email"
-//           className="form-control"
-//           placeholder="Ingrese su email"
-//           value={email}
-//           onChange={(e) => setEmail(e.target.value)}
-//           required
-//         />
-//       </div>
-//       <div className="mb-3">
-//         <label className="form-label">Contraseña</label>
-//         <input
-//           type="password"
-//           className="form-control"
-//           placeholder="Ingrese su contraseña"
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//           required
-//         />
-//       </div>
-//       <button type="submit" className="btn btn-primary w-100">
-//         Ingresar
-//       </button>
-//     </form>
-//   );
-// };
-
-// export default LoginForm;
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -67,6 +23,7 @@ const LoginForm = () => {
     if (res.ok) {
       setMensaje('Login exitoso');
       localStorage.setItem('token', data.token);
+      localStorage.setItem('rol', data.rol);
       setIsAuthenticated(true);
       navigate('/usuarios'); // redirigir después del login
     } else {

@@ -48,3 +48,7 @@ app.get('/api/items', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+//ruta menus
+const menuRoutes = require('./routes/menus');
+app.use('/api/menus', menuRoutes);
+
