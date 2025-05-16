@@ -16,6 +16,9 @@ const Proveedores = () => {
 
   const [editandoId, setEditandoId] = useState(null);
 
+  const rol = localStorage.getItem('rol'); // Obtener el rol del usuario logueado
+  const soloLectura = rol === 'visitante'; // Determina si es solo lectura
+
   useEffect(() => {
     obtenerProveedores();
   }, []);
@@ -78,13 +81,10 @@ const Proveedores = () => {
     const doc = new jsPDF();
 
     const logo = new Image();
-    logo.src = '/assets/logo.png'; 
+    logo.src = '/assets/logo.png';
 
     logo.onload = () => {
-      // Logo (x, y, width, height)
       doc.addImage(logo, 'PNG', 10, 10, 30, 30);
-
-      // Título y fecha
       doc.setFontSize(16);
       doc.text('Listado de Proveedores', 50, 20);
 
@@ -92,7 +92,6 @@ const Proveedores = () => {
       doc.setFontSize(10);
       doc.text(`Generado el: ${fecha}`, 50, 28);
 
-      // Tabla
       autoTable(doc, {
         startY: 50,
         head: [['Nombre', 'Rubro', 'Teléfono', 'Email', 'Dirección', 'Observaciones']],
@@ -115,46 +114,48 @@ const Proveedores = () => {
     <div>
       <h2>Proveedores</h2>
 
-      <form onSubmit={handleSubmit} className="mb-4">
-        <div className="row">
-          {['nombre', 'rubro', 'telefono', 'email', 'direccion', 'observaciones'].map((campo) => (
-            <div className="col-md-6 mb-3" key={campo}>
-              <label className="form-label">
-                {campo.charAt(0).toUpperCase() + campo.slice(1)}
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name={campo}
-                value={nuevo[campo]}
-                onChange={handleChange}
-              />
-            </div>
-          ))}
-        </div>
-        <button type="submit" className="btn btn-success">
-          {editandoId ? 'Actualizar' : 'Guardar'}
-        </button>
-        {editandoId && (
-          <button
-            type="button"
-            className="btn btn-secondary ms-2"
-            onClick={() => {
-              setEditandoId(null);
-              setNuevo({
-                nombre: '',
-                rubro: '',
-                telefono: '',
-                email: '',
-                direccion: '',
-                observaciones: ''
-              });
-            }}
-          >
-            Cancelar
+      {!soloLectura && (
+        <form onSubmit={handleSubmit} className="mb-4">
+          <div className="row">
+            {['nombre', 'rubro', 'telefono', 'email', 'direccion', 'observaciones'].map((campo) => (
+              <div className="col-md-6 mb-3" key={campo}>
+                <label className="form-label">
+                  {campo.charAt(0).toUpperCase() + campo.slice(1)}
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name={campo}
+                  value={nuevo[campo]}
+                  onChange={handleChange}
+                />
+              </div>
+            ))}
+          </div>
+          <button type="submit" className="btn btn-success">
+            {editandoId ? 'Actualizar' : 'Guardar'}
           </button>
-        )}
-      </form>
+          {editandoId && (
+            <button
+              type="button"
+              className="btn btn-secondary ms-2"
+              onClick={() => {
+                setEditandoId(null);
+                setNuevo({
+                  nombre: '',
+                  rubro: '',
+                  telefono: '',
+                  email: '',
+                  direccion: '',
+                  observaciones: ''
+                });
+              }}
+            >
+              Cancelar
+            </button>
+          )}
+        </form>
+      )}
 
       <div className="mb-3">
         <button className="btn btn-primary" onClick={generarPDF}>
@@ -172,7 +173,7 @@ const Proveedores = () => {
             <th>Email</th>
             <th>Dirección</th>
             <th>Observaciones</th>
-            <th>Acciones</th>
+            {!soloLectura && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -184,10 +185,12 @@ const Proveedores = () => {
               <td>{prov.email}</td>
               <td>{prov.direccion}</td>
               <td>{prov.observaciones}</td>
-              <td>
-                <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditar(prov)}>Editar</button>
-                <button className="btn btn-danger btn-sm" onClick={() => handleEliminar(prov._id)}>Eliminar</button>
-              </td>
+              {!soloLectura && (
+                <td>
+                  <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditar(prov)}>Editar</button>
+                  <button className="btn btn-danger btn-sm" onClick={() => handleEliminar(prov._id)}>Eliminar</button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -197,3 +200,4 @@ const Proveedores = () => {
 };
 
 export default Proveedores;
+

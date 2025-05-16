@@ -13,6 +13,9 @@ const Clientes = () => {
   });
   const [editandoId, setEditandoId] = useState(null);
 
+  const rol = localStorage.getItem('rol'); // obtener rol
+  const soloLectura = rol === 'visitante'; // solo lectura para visitantes
+
   useEffect(() => {
     obtenerClientes();
   }, []);
@@ -96,40 +99,42 @@ const Clientes = () => {
     <div className="container my-4">
       <h2>Clientes</h2>
 
-      <form onSubmit={handleSubmit} className="mb-4">
-        <div className="row">
-          {['nombre', 'email', 'telefono', 'direccion'].map((campo) => (
-            <div className="col-md-6 mb-3" key={campo}>
-              <label className="form-label">
-                {campo.charAt(0).toUpperCase() + campo.slice(1)}
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name={campo}
-                value={nuevo[campo]}
-                onChange={handleChange}
-              />
-            </div>
-          ))}
-        </div>
+      {!soloLectura && (
+        <form onSubmit={handleSubmit} className="mb-4">
+          <div className="row">
+            {['nombre', 'email', 'telefono', 'direccion'].map((campo) => (
+              <div className="col-md-6 mb-3" key={campo}>
+                <label className="form-label">
+                  {campo.charAt(0).toUpperCase() + campo.slice(1)}
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name={campo}
+                  value={nuevo[campo]}
+                  onChange={handleChange}
+                />
+              </div>
+            ))}
+          </div>
 
-        <button type="submit" className="btn btn-success">
-          {editandoId ? 'Actualizar' : 'Guardar'}
-        </button>
-        {editandoId && (
-          <button
-            type="button"
-            className="btn btn-secondary ms-2"
-            onClick={() => {
-              setEditandoId(null);
-              setNuevo({ nombre: '', email: '', telefono: '', direccion: '' });
-            }}
-          >
-            Cancelar
+          <button type="submit" className="btn btn-success">
+            {editandoId ? 'Actualizar' : 'Guardar'}
           </button>
-        )}
-      </form>
+          {editandoId && (
+            <button
+              type="button"
+              className="btn btn-secondary ms-2"
+              onClick={() => {
+                setEditandoId(null);
+                setNuevo({ nombre: '', email: '', telefono: '', direccion: '' });
+              }}
+            >
+              Cancelar
+            </button>
+          )}
+        </form>
+      )}
 
       <div className="mb-3 text-start">
         <button className="btn btn-primary" onClick={generarPDF}>
@@ -156,12 +161,16 @@ const Clientes = () => {
               <td>{cliente.telefono}</td>
               <td>{cliente.direccion}</td>
               <td>
-                <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditar(cliente)}>
-                  Editar
-                </button>
-                <button className="btn btn-danger btn-sm" onClick={() => handleEliminar(cliente._id)}>
-                  Eliminar
-                </button>
+                {!soloLectura && (
+                  <>
+                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditar(cliente)}>
+                      Editar
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleEliminar(cliente._id)}>
+                      Eliminar
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}

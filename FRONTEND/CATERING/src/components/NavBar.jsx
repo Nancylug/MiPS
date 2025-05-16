@@ -1,15 +1,15 @@
-
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
-  const { isAuthenticated, setIsAuthenticated, usuario } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, usuario, setUsuario } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
+    setUsuario(null); // ✅ Limpiar usuario al cerrar sesión
     navigate('/login');
   };
 
@@ -29,8 +29,7 @@ const Navbar = () => {
 
           <div className="d-flex align-items-center gap-2">
             <span className="navbar-text text-white">
-              
-           Bienvenido {usuario?.nombre}
+              Bienvenido {usuario?.nombre}
             </span>
 
             <button className="btn btn-danger btn-sm" onClick={handleLogout}>Cerrar sesión</button>
@@ -46,6 +45,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 
 

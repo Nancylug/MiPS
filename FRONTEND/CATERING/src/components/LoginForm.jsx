@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const LoginForm = () => {
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated, setUsuario } = useContext(AuthContext); // ✅ importar setUsuario
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,8 +25,12 @@ const LoginForm = () => {
       setMensaje('Login exitoso');
       localStorage.setItem('token', data.token);
       localStorage.setItem('rol', data.rol);
-      setIsAuthenticated(true);
-      navigate('/usuarios'); // redirigir después del login
+
+      const decoded = jwtDecode(data.token);     // ✅ decodificar token
+      setUsuario(decoded);                        // ✅ establecer usuario
+      setIsAuthenticated(true);                   // ✅ autenticado
+
+      navigate('/usuarios');                      // redirigir después del login
     } else {
       setMensaje(data.message || 'Error de login');
     }
@@ -49,3 +54,5 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
+

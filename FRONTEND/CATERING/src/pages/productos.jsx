@@ -10,14 +10,17 @@ const Productos = () => {
     nombre: '',
     descripcion: '',
     unidad: '',
-    precioSinIVA: '',  // Campo para el precio sin IVA
-    precioConIVA: '',  // Campo para el precio con IVA
+    precioSinIVA: '',
+    precioConIVA: '',
     categoria: '',
     proveedor: '',
-    stock: '',  // Agregado el campo de stock
-    fecha: ''  // Agregado el campo de fecha
+    stock: '',
+    fecha: ''
   });
   const [editandoId, setEditandoId] = useState(null);
+
+  const rol = localStorage.getItem('rol');
+  const soloLectura = rol === 'visitante';
 
   useEffect(() => {
     obtenerProductos();
@@ -43,13 +46,12 @@ const Productos = () => {
   };
 
   const handleChange = (e) => {
-    // Si se cambia el precio sin IVA, recalculamos el precio con IVA
     if (e.target.name === 'precioSinIVA') {
       const precioSinIVA = parseFloat(e.target.value);
       setNuevo({
         ...nuevo,
         precioSinIVA,
-        precioConIVA: precioSinIVA ? (precioSinIVA * 1.21).toFixed(2) : ''  // Suponiendo un IVA del 21%
+        precioConIVA: precioSinIVA ? (precioSinIVA * 1.21).toFixed(2) : ''
       });
     } else {
       setNuevo({ ...nuevo, [e.target.name]: e.target.value });
@@ -58,13 +60,15 @@ const Productos = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (soloLectura) return;
+
     try {
       const datos = {
         ...nuevo,
         precioSinIVA: parseFloat(nuevo.precioSinIVA),
-        precioConIVA: parseFloat(nuevo.precioConIVA),  // Asegurarse de que el precio con IVA es un número
-        stock: parseInt(nuevo.stock),  // Convertir el valor de stock a entero
-        fecha: nuevo.fecha || new Date().toISOString() // Si no se selecciona fecha, se establece la fecha actual
+        precioConIVA: parseFloat(nuevo.precioConIVA),
+        stock: parseInt(nuevo.stock),
+        fecha: nuevo.fecha || new Date().toISOString()
       };
 
       if (!datos.proveedor) {
@@ -87,21 +91,25 @@ const Productos = () => {
   };
 
   const handleEditar = (prod) => {
+    if (soloLectura) return;
+
     setNuevo({
       nombre: prod.nombre || '',
       descripcion: prod.descripcion || '',
       unidad: prod.unidad || '',
       precioSinIVA: prod.precioSinIVA || '',
-      precioConIVA: prod.precioConIVA || '',  // Cargar el precio con IVA al editar
+      precioConIVA: prod.precioConIVA || '',
       categoria: prod.categoria || '',
       proveedor: prod.proveedor?._id || '',
-      stock: prod.stock || '',  // Cargar el stock al editar
-      fecha: prod.fecha || ''  // Cargar la fecha al editar
+      stock: prod.stock || '',
+      fecha: prod.fecha || ''
     });
     setEditandoId(prod._id);
   };
 
   const handleEliminar = async (id) => {
+    if (soloLectura) return;
+
     if (window.confirm('¿Estás seguro de eliminar este producto?')) {
       try {
         await axios.delete(`http://localhost:3001/api/productos/${id}`);
@@ -117,40 +125,32 @@ const Productos = () => {
       nombre: '',
       descripcion: '',
       unidad: '',
-      precioSinIVA: '',  // Reiniciar el precio sin IVA
-      precioConIVA: '',  // Reiniciar el precio con IVA
+      precioSinIVA: '',
+      precioConIVA: '',
       categoria: '',
       proveedor: '',
-      stock: '',  // Reiniciar el stock
-      fecha: ''  // Reiniciar la fecha
+      stock: '',
+      fecha: ''
     });
     setEditandoId(null);
   };
 
   const generarPDF = () => {
     const doc = new jsPDF();
-
     const logo = new Image();
-    logo.src = '/assets/logo.png'; // Ruta del logo
+    logo.src = '/assets/logo.png';
 
     logo.onload = () => {
-      // Agregar logo (x, y, width, height)
       doc.addImage(logo, 'PNG', 10, 10, 30, 30);
-
-      // Título y fecha
       doc.setFontSize(16);
       doc.text('Listado de Productos', 50, 20);
-
       const fecha = new Date().toLocaleString();
       doc.setFontSize(10);
       doc.text(`Generado el: ${fecha}`, 50, 28);
 
-      // Tabla de productos
       autoTable(doc, {
         startY: 50,
-        head: [
-          ['Nombre', 'Categoría', 'Precio Sin IVA', 'Precio Con IVA', 'Unidad', 'Descripción', 'Proveedor', 'Stock', 'Fecha']
-        ],
+        head: [['Nombre', 'Categoría', 'Precio Sin IVA', 'Precio Con IVA', 'Unidad', 'Descripción', 'Proveedor', 'Stock', 'Fecha']],
         body: productos.map(p => [
           p.nombre,
           p.categoria,
@@ -160,7 +160,7 @@ const Productos = () => {
           p.descripcion,
           p.proveedor?.nombre,
           p.stock,
-          new Date(p.fecha).toLocaleDateString()  // Mostrar la fecha en formato legible
+          new Date(p.fecha).toLocaleDateString()
         ]),
         styles: { fontSize: 9 }
       });
@@ -173,8 +173,9 @@ const Productos = () => {
     <div className="container my-4">
       <h2 className="mb-4">Productos</h2>
 
-      <form onSubmit={handleSubmit} className="row g-3">
-        {/* Formulario de productos */}
+      {!soloLectura && (
+        <form onSubmit={handleSubmit} className="row g-3">
+           {/* Formulario de productos */}
         <div className="col-md-6">
           <label className="form-label">Nombre</label>
           <input
@@ -319,8 +320,10 @@ const Productos = () => {
             </button>
           )}
         </div>
-      </form>
-       <button className="btn btn-primary mt-4" onClick={generarPDF}>
+        </form>
+      )}
+
+      <button className="btn btn-primary mt-4" onClick={generarPDF}>
         Descargar PDF
       </button>
 
@@ -338,7 +341,7 @@ const Productos = () => {
               <th>Proveedor</th>
               <th>Stock</th>
               <th>Fecha</th>
-              <th>Acciones</th>
+              {!soloLectura && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -353,35 +356,26 @@ const Productos = () => {
                 <td>{producto.proveedor?.nombre}</td>
                 <td>{producto.stock}</td>
                 <td>{new Date(producto.fecha).toLocaleDateString()}</td>
-                <td>
-                  <button
-                    className="btn btn-warning btn-sm"
-                    onClick={() => handleEditar(producto)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm ms-2"
-                    onClick={() => handleEliminar(producto._id)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
+                {!soloLectura && (
+                  <td>
+                    <button className="btn btn-warning btn-sm" onClick={() => handleEditar(producto)}>
+                      Editar
+                    </button>
+                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleEliminar(producto._id)}>
+                      Eliminar
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-     
     </div>
   );
 };
 
 export default Productos;
-
-
-
-
 
 
 
