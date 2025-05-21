@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../config/axiosInstance';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -22,7 +22,7 @@ const Clientes = () => {
 
   const obtenerClientes = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/api/clientes');
+      const res = await axios.get('/clientes');
       setClientes(res.data);
     } catch (err) {
       console.error('Error al obtener clientes:', err);
@@ -37,11 +37,11 @@ const Clientes = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        const res = await axios.put(`http://localhost:3001/api/clientes/${editandoId}`, nuevo);
+        const res = await axios.put(`/clientes/${editandoId}`, nuevo);
         setClientes(clientes.map(c => c._id === editandoId ? res.data : c));
         setEditandoId(null);
       } else {
-        const res = await axios.post('http://localhost:3001/api/clientes', nuevo);
+        const res = await axios.post('/clientes', nuevo);
         setClientes([...clientes, res.data]);
       }
       setNuevo({ nombre: '', email: '', telefono: '', direccion: '' });
@@ -58,7 +58,7 @@ const Clientes = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este cliente?')) {
       try {
-        await axios.delete(`http://localhost:3001/api/clientes/${id}`);
+        await axios.delete(`/clientes/${id}`);
         setClientes(clientes.filter(c => c._id !== id));
       } catch (err) {
         console.error('Error al eliminar cliente:', err);

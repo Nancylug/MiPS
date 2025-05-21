@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../config/axiosInstance';
 
 const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -15,7 +15,7 @@ const Usuarios = () => {
 
   const obtenerUsuarios = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/api/usuarios');
+      const res = await axios.get('/usuarios');
       setUsuarios(res.data);
     } catch (err) {
       console.error('Error al obtener usuarios:', err);
@@ -31,11 +31,11 @@ const Usuarios = () => {
     try {
       if (editandoId) {
         const { _id, ...datosSinId } = nuevo;
-        const res = await axios.put(`http://localhost:3001/api/usuarios/${editandoId}`, datosSinId);
+        const res = await axios.put(`/usuarios/${editandoId}`, datosSinId);
         setUsuarios(usuarios.map(u => u._id === editandoId ? res.data : u));
         setEditandoId(null);
       } else {
-        const res = await axios.post('http://localhost:3001/api/usuarios', nuevo);
+        const res = await axios.post('/usuarios', nuevo);
         setUsuarios([...usuarios, res.data]);
       }
       setNuevo({ nombre: '', email: '', rol: '', password: '' });
@@ -52,7 +52,7 @@ const Usuarios = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este usuario?')) {
       try {
-        await axios.delete(`http://localhost:3001/api/usuarios/${id}`);
+        await axios.delete(`/usuarios/${id}`);
         setUsuarios(usuarios.filter(u => u._id !== id));
       } catch (err) {
         console.error('Error al eliminar usuario:', err);
