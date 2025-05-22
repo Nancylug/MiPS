@@ -18,6 +18,15 @@ const Proveedores = () => {
   const rol = localStorage.getItem('rol');
   const soloLectura = rol === 'visitante';
 
+  // Estado para mensaje de éxito
+  const [mensajeExito, setMensajeExito] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
+  const mostrarModal = (mensaje) => {
+    setMensajeExito(mensaje);
+    setShowModal(true);
+  };
+
   useEffect(() => {
     obtenerProveedores();
   }, []);
@@ -43,9 +52,11 @@ const Proveedores = () => {
         const res = await axios.put(`/proveedores/${editandoId}`, datosSinId);
         setProveedores(proveedores.map(p => p._id === editandoId ? res.data : p));
         setEditandoId(null);
+        mostrarModal('Proveedor actualizado con éxito.');
       } else {
         const res = await axios.post('/proveedores', nuevo);
         setProveedores([...proveedores, res.data]);
+        mostrarModal('Proveedor guardado con éxito.');
       }
       setNuevo({
         nombre: '',
@@ -70,6 +81,7 @@ const Proveedores = () => {
       try {
         await axios.delete(`/proveedores/${id}`);
         setProveedores(proveedores.filter(p => p._id !== id));
+        mostrarModal('Proveedor eliminado con éxito.');
       } catch (err) {
         console.error('Error al eliminar proveedor:', err);
       }
@@ -195,6 +207,27 @@ const Proveedores = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal de Éxito */}
+      {showModal && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Éxito</h5>
+              </div>
+              <div className="modal-body">
+                <p>{mensajeExito}</p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-success" onClick={() => setShowModal(false)}>
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
