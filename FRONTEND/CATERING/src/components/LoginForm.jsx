@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import axios from '../config/axiosInstance';
+//import axios from '../config/axiosInstance';
+import { API_URL } from '../config/config';
 
 const LoginForm = () => {
   const { setIsAuthenticated, setUsuario } = useContext(AuthContext); // ✅ importar setUsuario
