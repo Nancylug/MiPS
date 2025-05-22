@@ -15,7 +15,6 @@ const Proveedores = () => {
   });
 
   const [editandoId, setEditandoId] = useState(null);
-
   const rol = localStorage.getItem('rol');
   const soloLectura = rol === 'visitante';
 
@@ -79,7 +78,6 @@ const Proveedores = () => {
 
   const generarPDF = () => {
     const doc = new jsPDF();
-
     const logo = new Image();
     logo.src = '/assets/logo.png';
 
@@ -111,14 +109,14 @@ const Proveedores = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Proveedores</h2>
 
       {!soloLectura && (
         <form onSubmit={handleSubmit} className="mb-4">
           <div className="row">
             {['nombre', 'rubro', 'telefono', 'email', 'direccion', 'observaciones'].map((campo) => (
-              <div className="col-md-6 mb-3" key={campo}>
+              <div className="col-12 col-md-6 mb-3" key={campo}>
                 <label className="form-label">
                   {campo.charAt(0).toUpperCase() + campo.slice(1)}
                 </label>
@@ -164,37 +162,39 @@ const Proveedores = () => {
       </div>
 
       <h4>Listado</h4>
-      <table className="table table-striped table-bordered">
-        <thead className="table-dark">
-          <tr>
-            <th>Nombre</th>
-            <th>Rubro</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-            <th>Dirección</th>
-            <th>Observaciones</th>
-            {!soloLectura && <th>Acciones</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {proveedores.map((prov) => (
-            <tr key={prov._id}>
-              <td>{prov.nombre}</td>
-              <td>{prov.rubro}</td>
-              <td>{prov.telefono}</td>
-              <td>{prov.email}</td>
-              <td>{prov.direccion}</td>
-              <td>{prov.observaciones}</td>
-              {!soloLectura && (
-                <td>
-                  <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditar(prov)}>Editar</button>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleEliminar(prov._id)}>Eliminar</button>
-                </td>
-              )}
+      <div className="table-responsive">
+        <table className="table table-striped table-bordered">
+          <thead className="table-dark">
+            <tr>
+              <th>Nombre</th>
+              <th>Rubro</th>
+              <th>Teléfono</th>
+              <th>Email</th>
+              <th>Dirección</th>
+              <th>Observaciones</th>
+              {!soloLectura && <th>Acciones</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {proveedores.map((prov) => (
+              <tr key={prov._id}>
+                <td>{prov.nombre}</td>
+                <td>{prov.rubro}</td>
+                <td>{prov.telefono}</td>
+                <td>{prov.email}</td>
+                <td>{prov.direccion}</td>
+                <td>{prov.observaciones}</td>
+                {!soloLectura && (
+                  <td>
+                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditar(prov)}>Editar</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleEliminar(prov._id)}>Eliminar</button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
