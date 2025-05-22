@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../config/axiosInstance';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -16,8 +16,8 @@ const Proveedores = () => {
 
   const [editandoId, setEditandoId] = useState(null);
 
-  const rol = localStorage.getItem('rol'); // Obtener el rol del usuario logueado
-  const soloLectura = rol === 'visitante'; // Determina si es solo lectura
+  const rol = localStorage.getItem('rol');
+  const soloLectura = rol === 'visitante';
 
   useEffect(() => {
     obtenerProveedores();
@@ -25,7 +25,7 @@ const Proveedores = () => {
 
   const obtenerProveedores = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/api/proveedores');
+      const res = await axios.get('/proveedores');
       setProveedores(res.data);
     } catch (err) {
       console.error('Error al obtener proveedores:', err);
@@ -41,11 +41,11 @@ const Proveedores = () => {
     try {
       if (editandoId) {
         const { _id, ...datosSinId } = nuevo;
-        const res = await axios.put(`http://localhost:3001/api/proveedores/${editandoId}`, datosSinId);
+        const res = await axios.put(`/proveedores/${editandoId}`, datosSinId);
         setProveedores(proveedores.map(p => p._id === editandoId ? res.data : p));
         setEditandoId(null);
       } else {
-        const res = await axios.post('http://localhost:3001/api/proveedores', nuevo);
+        const res = await axios.post('/proveedores', nuevo);
         setProveedores([...proveedores, res.data]);
       }
       setNuevo({
@@ -69,7 +69,7 @@ const Proveedores = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este proveedor?')) {
       try {
-        await axios.delete(`http://localhost:3001/api/proveedores/${id}`);
+        await axios.delete(`/proveedores/${id}`);
         setProveedores(proveedores.filter(p => p._id !== id));
       } catch (err) {
         console.error('Error al eliminar proveedor:', err);
@@ -200,4 +200,3 @@ const Proveedores = () => {
 };
 
 export default Proveedores;
-
