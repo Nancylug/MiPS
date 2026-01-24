@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
 
-mongoose.connect('mongodb+srv://Urtubey2025:CateringUrtubey@cluster0.s2wpd.mongodb.net/BDCateringUrtubey');
+mongoose.connect('mongodb+srv://nancylug:Urtubey2026@cluster2026.12pn4no.mongodb.net/');
 ;
 
 const crearUsuario = async () => {
