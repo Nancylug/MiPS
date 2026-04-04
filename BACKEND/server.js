@@ -33,6 +33,37 @@ mongoose.connect(process.env.MONGODB_URI
 
 // 🔐 Ruta de Login
 app.post('/api/login', async (req, res) => {
+  // 🆕 Registro de usuario
+app.post('/api/register', async (req, res) => {
+  try {
+    const { nombre, email, password, rol } = req.body;
+
+    // Verificar si ya existe
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'El usuario ya existe' });
+    }
+
+    // Encriptar contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear usuario
+    const newUser = new User({
+      nombre,
+      email,
+      password: hashedPassword,
+      rol: rol || 'usuario'
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: 'Usuario creado correctamente' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+});
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
