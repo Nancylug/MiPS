@@ -1,3 +1,559 @@
+// import React, { useEffect, useState } from 'react';
+// import axios from '../config/axiosInstance';
+
+// const Menus = () => {
+
+//   const [menus, setMenus] = useState([]);
+//   const [productos, setProductos] = useState([]);
+
+//   const [nuevo, setNuevo] = useState({
+//     nombre: '',
+//     descripcion: '',
+//     rendimientoPersonas: '',
+//     ingredientes: []
+//   });
+
+//   const [editandoId, setEditandoId] = useState(null);
+
+//   const rol = localStorage.getItem('rol');
+//   const soloLectura = rol === 'visitante';
+
+//   useEffect(() => {
+//     obtenerMenus();
+//     obtenerProductos();
+//   }, []);
+
+//   // =========================
+//   // OBTENER MENUS
+//   // =========================
+
+//   const obtenerMenus = async () => {
+//     try {
+//       const res = await axios.get('/menus');
+//       setMenus(res.data);
+//     } catch (error) {
+//       console.error('Error al obtener menús:', error);
+//     }
+//   };
+
+//   // =========================
+//   // OBTENER PRODUCTOS
+//   // =========================
+
+//   const obtenerProductos = async () => {
+//     try {
+//       const res = await axios.get('/productos');
+//       setProductos(res.data);
+//     } catch (error) {
+//       console.error('Error al obtener productos:', error);
+//     }
+//   };
+
+//   // =========================
+//   // HANDLE INPUTS NORMALES
+//   // =========================
+
+//   const handleChange = (e) => {
+//     setNuevo({
+//       ...nuevo,
+//       [e.target.name]: e.target.value
+//     });
+//   };
+
+//   // =========================
+//   // AGREGAR INGREDIENTE
+//   // =========================
+
+//   const agregarIngrediente = () => {
+
+//     setNuevo({
+//       ...nuevo,
+//       ingredientes: [
+//         ...nuevo.ingredientes,
+//         {
+//           producto: '',
+//           cantidad: ''
+//         }
+//       ]
+//     });
+//   };
+
+//   // =========================
+//   // CAMBIAR INGREDIENTE
+//   // =========================
+
+//   const handleIngredienteChange = (
+//     index,
+//     campo,
+//     valor
+//   ) => {
+
+//     const nuevosIngredientes =
+//       [...nuevo.ingredientes];
+
+//     nuevosIngredientes[index][campo] = valor;
+
+//     setNuevo({
+//       ...nuevo,
+//       ingredientes: nuevosIngredientes
+//     });
+//   };
+
+//   // =========================
+//   // ELIMINAR INGREDIENTE
+//   // =========================
+
+//   const eliminarIngrediente = (index) => {
+
+//     const nuevosIngredientes =
+//       nuevo.ingredientes.filter(
+//         (_, i) => i !== index
+//       );
+
+//     setNuevo({
+//       ...nuevo,
+//       ingredientes: nuevosIngredientes
+//     });
+//   };
+
+//   // =========================
+//   // GUARDAR MENU
+//   // =========================
+
+//   const handleSubmit = async (e) => {
+
+//     e.preventDefault();
+
+//     if (soloLectura) return;
+
+//     try {
+
+//       const datos = {
+//         ...nuevo,
+//         rendimientoPersonas: Number(
+//           nuevo.rendimientoPersonas
+//         ),
+//         ingredientes: nuevo.ingredientes.map((ing) => ({
+//           producto: ing.producto,
+//           cantidad: Number(ing.cantidad)
+//         }))
+//       };
+
+//       if (editandoId) {
+
+//         await axios.put(
+//           `/menus/${editandoId}`,
+//           datos
+//         );
+
+//       } else {
+
+//         await axios.post(
+//           '/menus',
+//           datos
+//         );
+//       }
+
+//       obtenerMenus();
+
+//       resetFormulario();
+
+//     } catch (error) {
+
+//       console.error(
+//         'Error al guardar menú:',
+//         error
+//       );
+//     }
+//   };
+
+//   // =========================
+//   // EDITAR MENU
+//   // =========================
+
+//   const handleEditar = (menu) => {
+
+//     setNuevo({
+//       nombre: menu.nombre || '',
+//       descripcion: menu.descripcion || '',
+//       rendimientoPersonas:
+//         menu.rendimientoPersonas || '',
+
+//       ingredientes:
+//         menu.ingredientes.map((ing) => ({
+//           producto: ing.producto?._id || '',
+//           cantidad: ing.cantidad || ''
+//         }))
+//     });
+
+//     setEditandoId(menu._id);
+//   };
+
+//   // =========================
+//   // ELIMINAR MENU
+//   // =========================
+
+//   const handleEliminar = async (id) => {
+
+//     if (soloLectura) return;
+
+//     const confirmar = window.confirm(
+//       '¿Eliminar menú?'
+//     );
+
+//     if (!confirmar) return;
+
+//     try {
+
+//       await axios.delete(`/menus/${id}`);
+
+//       obtenerMenus();
+
+//     } catch (error) {
+
+//       console.error(
+//         'Error al eliminar menú:',
+//         error
+//       );
+//     }
+//   };
+
+//   // =========================
+//   // RESET
+//   // =========================
+
+//   const resetFormulario = () => {
+
+//     setNuevo({
+//       nombre: '',
+//       descripcion: '',
+//       rendimientoPersonas: '',
+//       ingredientes: []
+//     });
+
+//     setEditandoId(null);
+//   };
+
+//   // =========================
+//   // RENDER
+//   // =========================
+
+//   return (
+
+//     <div className="container my-4">
+
+//       <h2 className="mb-4">
+//         Menús
+//       </h2>
+
+//       {!soloLectura && (
+
+//         <form
+//           onSubmit={handleSubmit}
+//           className="row g-3"
+//         >
+
+//           {/* NOMBRE */}
+
+//           <div className="col-md-6">
+
+//             <label className="form-label">
+//               Nombre
+//             </label>
+
+//             <input
+//               type="text"
+//               className="form-control"
+//               name="nombre"
+//               value={nuevo.nombre}
+//               onChange={handleChange}
+//               required
+//             />
+
+//           </div>
+
+//           {/* RENDIMIENTO */}
+
+//           <div className="col-md-6">
+
+//             <label className="form-label">
+//               Rinde para
+//             </label>
+
+//             <input
+//               type="number"
+//               className="form-control"
+//               name="rendimientoPersonas"
+//               value={nuevo.rendimientoPersonas}
+//               onChange={handleChange}
+//               required
+//             />
+
+//           </div>
+
+//           {/* DESCRIPCION */}
+
+//           <div className="col-md-12">
+
+//             <label className="form-label">
+//               Descripción
+//             </label>
+
+//             <textarea
+//               className="form-control"
+//               name="descripcion"
+//               value={nuevo.descripcion}
+//               onChange={handleChange}
+//             />
+
+//           </div>
+
+//           {/* INGREDIENTES */}
+
+//           <div className="col-12">
+
+//             <h4 className="mt-4">
+//               Ingredientes
+//             </h4>
+
+//             {nuevo.ingredientes.map(
+//               (ing, index) => (
+
+//                 <div
+//                   className="row mb-2"
+//                   key={index}
+//                 >
+
+//                   {/* PRODUCTO */}
+
+//                   <div className="col-md-6">
+
+//                     <select
+//                       className="form-select"
+//                       value={ing.producto}
+//                       onChange={(e) =>
+//                         handleIngredienteChange(
+//                           index,
+//                           'producto',
+//                           e.target.value
+//                         )
+//                       }
+//                       required
+//                     >
+
+//                       <option value="">
+//                         Seleccione producto
+//                       </option>
+
+//                       {productos.map((prod) => (
+
+//                         <option
+//                           key={prod._id}
+//                           value={prod._id}
+//                         >
+//                           {prod.nombre}
+//                           {' '}
+//                           ({prod.unidad})
+//                         </option>
+
+//                       ))}
+
+//                     </select>
+
+//                   </div>
+
+//                   {/* CANTIDAD */}
+
+//                   <div className="col-md-4">
+
+//                     <input
+//                       type="number"
+//                       className="form-control"
+//                       placeholder="Cantidad"
+//                       value={ing.cantidad}
+//                       onChange={(e) =>
+//                         handleIngredienteChange(
+//                           index,
+//                           'cantidad',
+//                           e.target.value
+//                         )
+//                       }
+//                       required
+//                     />
+
+//                   </div>
+
+//                   {/* ELIMINAR */}
+
+//                   <div className="col-md-2">
+
+//                     <button
+//                       type="button"
+//                       className="btn btn-danger"
+//                       onClick={() =>
+//                         eliminarIngrediente(index)
+//                       }
+//                     >
+//                       X
+//                     </button>
+
+//                   </div>
+
+//                 </div>
+//               )
+//             )}
+
+//             {/* AGREGAR */}
+
+//             <button
+//               type="button"
+//               className="btn btn-secondary mt-2"
+//               onClick={agregarIngrediente}
+//             >
+//               + Agregar ingrediente
+//             </button>
+
+//           </div>
+
+//           {/* BOTONES */}
+
+//           <div className="col-12">
+
+//             <button
+//               type="submit"
+//               className="btn btn-success"
+//             >
+//               {editandoId
+//                 ? 'Actualizar'
+//                 : 'Guardar'}
+//             </button>
+
+//             {editandoId && (
+
+//               <button
+//                 type="button"
+//                 className="btn btn-secondary ms-2"
+//                 onClick={resetFormulario}
+//               >
+//                 Cancelar
+//               </button>
+
+//             )}
+
+//           </div>
+
+//         </form>
+//       )}
+
+//       {/* TABLA */}
+
+//       <h4 className="mt-5">
+//         Listado de menús
+//       </h4>
+
+//       <div className="table-responsive">
+
+//         <table className="table table-bordered">
+
+//           <thead className="table-dark">
+
+//             <tr>
+
+//               <th>Nombre</th>
+//               <th>Descripción</th>
+//               <th>Rinde</th>
+//               <th>Ingredientes</th>
+
+//               {!soloLectura &&
+//                 <th>Acciones</th>
+//               }
+
+//             </tr>
+
+//           </thead>
+
+//           <tbody>
+
+//             {menus.map((menu) => (
+
+//               <tr key={menu._id}>
+
+//                 <td>{menu.nombre}</td>
+
+//                 <td>
+//                   {menu.descripcion}
+//                 </td>
+
+//                 <td>
+//                   {menu.rendimientoPersonas}
+//                   {' '}personas
+//                 </td>
+
+//                 <td>
+
+//                   <ul>
+
+//                     {menu.ingredientes.map(
+//                       (ing, index) => (
+
+//                         <li key={index}>
+
+//                           {ing.producto?.nombre}
+//                           {' - '}
+//                           {ing.cantidad}
+//                           {' '}
+//                           {ing.producto?.unidad}
+
+//                         </li>
+//                       )
+//                     )}
+
+//                   </ul>
+
+//                 </td>
+
+//                 {!soloLectura && (
+
+//                   <td>
+
+//                     <button
+//                       className="btn btn-warning btn-sm"
+//                       onClick={() =>
+//                         handleEditar(menu)
+//                       }
+//                     >
+//                       Editar
+//                     </button>
+
+//                     <button
+//                       className="btn btn-danger btn-sm ms-2"
+//                       onClick={() =>
+//                         handleEliminar(menu._id)
+//                       }
+//                     >
+//                       Eliminar
+//                     </button>
+
+//                   </td>
+
+//                 )}
+
+//               </tr>
+
+//             ))}
+
+//           </tbody>
+
+//         </table>
+
+//       </div>
+
+//     </div>
+//   );
+// };
+
+// export default Menus;
+
 import React, { useEffect, useState } from 'react';
 import axios from '../config/axiosInstance';
 
@@ -10,66 +566,95 @@ const Menus = () => {
     nombre: '',
     descripcion: '',
     rendimientoPersonas: '',
+    margenGanancia: 100,
     ingredientes: []
   });
 
   const [editandoId, setEditandoId] = useState(null);
 
   const rol = localStorage.getItem('rol');
+
   const soloLectura = rol === 'visitante';
 
   useEffect(() => {
+
     obtenerMenus();
+
     obtenerProductos();
+
   }, []);
 
-  // =========================
+  // =========================================
   // OBTENER MENUS
-  // =========================
+  // =========================================
 
   const obtenerMenus = async () => {
+
     try {
+
       const res = await axios.get('/menus');
+
       setMenus(res.data);
+
     } catch (error) {
-      console.error('Error al obtener menús:', error);
+
+      console.error(
+        'Error al obtener menús:',
+        error
+      );
     }
   };
 
-  // =========================
+  // =========================================
   // OBTENER PRODUCTOS
-  // =========================
+  // =========================================
 
   const obtenerProductos = async () => {
+
     try {
+
       const res = await axios.get('/productos');
+
       setProductos(res.data);
+
     } catch (error) {
-      console.error('Error al obtener productos:', error);
+
+      console.error(
+        'Error al obtener productos:',
+        error
+      );
     }
   };
 
-  // =========================
-  // HANDLE INPUTS NORMALES
-  // =========================
+  // =========================================
+  // HANDLE INPUTS
+  // =========================================
 
   const handleChange = (e) => {
+
     setNuevo({
+
       ...nuevo,
+
       [e.target.name]: e.target.value
+
     });
   };
 
-  // =========================
+  // =========================================
   // AGREGAR INGREDIENTE
-  // =========================
+  // =========================================
 
   const agregarIngrediente = () => {
 
     setNuevo({
+
       ...nuevo,
+
       ingredientes: [
+
         ...nuevo.ingredientes,
+
         {
           producto: '',
           cantidad: ''
@@ -78,9 +663,9 @@ const Menus = () => {
     });
   };
 
-  // =========================
+  // =========================================
   // CAMBIAR INGREDIENTE
-  // =========================
+  // =========================================
 
   const handleIngredienteChange = (
     index,
@@ -91,17 +676,21 @@ const Menus = () => {
     const nuevosIngredientes =
       [...nuevo.ingredientes];
 
-    nuevosIngredientes[index][campo] = valor;
+    nuevosIngredientes[index][campo] =
+      valor;
 
     setNuevo({
+
       ...nuevo,
+
       ingredientes: nuevosIngredientes
+
     });
   };
 
-  // =========================
+  // =========================================
   // ELIMINAR INGREDIENTE
-  // =========================
+  // =========================================
 
   const eliminarIngrediente = (index) => {
 
@@ -111,14 +700,61 @@ const Menus = () => {
       );
 
     setNuevo({
+
       ...nuevo,
+
       ingredientes: nuevosIngredientes
+
     });
   };
 
-  // =========================
+  // =========================================
+  // CALCULAR COSTO TOTAL
+  // =========================================
+
+  const calcularCostoTotal = () => {
+
+    let total = 0;
+
+    nuevo.ingredientes.forEach((ing) => {
+
+      const producto =
+        productos.find(
+          (p) => p._id === ing.producto
+        );
+
+      if (producto) {
+
+        total +=
+          producto.precioConIVA *
+          Number(ing.cantidad);
+
+      }
+    });
+
+    return total;
+  };
+
+  // =========================================
+  // CALCULAR PRECIO VENTA
+  // =========================================
+
+  const calcularPrecioVenta = () => {
+
+    const costo = calcularCostoTotal();
+
+    const margen =
+      Number(nuevo.margenGanancia) || 0;
+
+    return (
+      costo *
+      (1 + margen / 100)
+    );
+  };
+
+  // =========================================
   // GUARDAR MENU
-  // =========================
+  // =========================================
 
   const handleSubmit = async (e) => {
 
@@ -129,14 +765,32 @@ const Menus = () => {
     try {
 
       const datos = {
+
         ...nuevo,
-        rendimientoPersonas: Number(
-          nuevo.rendimientoPersonas
-        ),
-        ingredientes: nuevo.ingredientes.map((ing) => ({
-          producto: ing.producto,
-          cantidad: Number(ing.cantidad)
-        }))
+
+        rendimientoPersonas:
+          Number(
+            nuevo.rendimientoPersonas
+          ),
+
+        margenGanancia:
+          Number(
+            nuevo.margenGanancia
+          ),
+
+        ingredientes:
+          nuevo.ingredientes.map(
+            (ing) => ({
+
+              producto:
+                ing.producto,
+
+              cantidad:
+                Number(
+                  ing.cantidad
+                )
+            })
+          )
       };
 
       if (editandoId) {
@@ -167,45 +821,63 @@ const Menus = () => {
     }
   };
 
-  // =========================
-  // EDITAR MENU
-  // =========================
+  // =========================================
+  // EDITAR
+  // =========================================
 
   const handleEditar = (menu) => {
 
     setNuevo({
-      nombre: menu.nombre || '',
-      descripcion: menu.descripcion || '',
+
+      nombre:
+        menu.nombre || '',
+
+      descripcion:
+        menu.descripcion || '',
+
       rendimientoPersonas:
         menu.rendimientoPersonas || '',
 
+      margenGanancia:
+        menu.margenGanancia || 100,
+
       ingredientes:
-        menu.ingredientes.map((ing) => ({
-          producto: ing.producto?._id || '',
-          cantidad: ing.cantidad || ''
-        }))
+        menu.ingredientes.map(
+          (ing) => ({
+
+            producto:
+              ing.producto?._id || '',
+
+            cantidad:
+              ing.cantidad || ''
+
+          })
+        )
     });
 
     setEditandoId(menu._id);
   };
 
-  // =========================
-  // ELIMINAR MENU
-  // =========================
+  // =========================================
+  // ELIMINAR
+  // =========================================
 
   const handleEliminar = async (id) => {
 
     if (soloLectura) return;
 
-    const confirmar = window.confirm(
-      '¿Eliminar menú?'
-    );
+    const confirmar =
+      window.confirm(
+        '¿Eliminar menú?'
+      );
 
     if (!confirmar) return;
 
     try {
 
-      await axios.delete(`/menus/${id}`);
+      await axios.delete(
+        `/menus/${id}`
+      );
 
       obtenerMenus();
 
@@ -218,25 +890,32 @@ const Menus = () => {
     }
   };
 
-  // =========================
+  // =========================================
   // RESET
-  // =========================
+  // =========================================
 
   const resetFormulario = () => {
 
     setNuevo({
+
       nombre: '',
+
       descripcion: '',
+
       rendimientoPersonas: '',
+
+      margenGanancia: 100,
+
       ingredientes: []
+
     });
 
     setEditandoId(null);
   };
 
-  // =========================
+  // =========================================
   // RENDER
-  // =========================
+  // =========================================
 
   return (
 
@@ -274,7 +953,7 @@ const Menus = () => {
 
           {/* RENDIMIENTO */}
 
-          <div className="col-md-6">
+          <div className="col-md-3">
 
             <label className="form-label">
               Rinde para
@@ -284,9 +963,31 @@ const Menus = () => {
               type="number"
               className="form-control"
               name="rendimientoPersonas"
-              value={nuevo.rendimientoPersonas}
+              value={
+                nuevo.rendimientoPersonas
+              }
               onChange={handleChange}
               required
+            />
+
+          </div>
+
+          {/* MARGEN */}
+
+          <div className="col-md-3">
+
+            <label className="form-label">
+              Margen %
+            </label>
+
+            <input
+              type="number"
+              className="form-control"
+              name="margenGanancia"
+              value={
+                nuevo.margenGanancia
+              }
+              onChange={handleChange}
             />
 
           </div>
@@ -317,93 +1018,148 @@ const Menus = () => {
             </h4>
 
             {nuevo.ingredientes.map(
-              (ing, index) => (
+              (ing, index) => {
 
-                <div
-                  className="row mb-2"
-                  key={index}
-                >
+                const producto =
+                  productos.find(
+                    (p) =>
+                      p._id ===
+                      ing.producto
+                  );
 
-                  {/* PRODUCTO */}
-
-                  <div className="col-md-6">
-
-                    <select
-                      className="form-select"
-                      value={ing.producto}
-                      onChange={(e) =>
-                        handleIngredienteChange(
-                          index,
-                          'producto',
-                          e.target.value
+                const subtotal =
+                  producto
+                    ? (
+                        producto.precioConIVA *
+                        Number(
+                          ing.cantidad
                         )
-                      }
-                      required
-                    >
+                      ).toFixed(2)
+                    : 0;
 
-                      <option value="">
-                        Seleccione producto
-                      </option>
+                return (
 
-                      {productos.map((prod) => (
+                  <div
+                    className="row mb-2"
+                    key={index}
+                  >
 
-                        <option
-                          key={prod._id}
-                          value={prod._id}
-                        >
-                          {prod.nombre}
-                          {' '}
-                          ({prod.unidad})
+                    {/* PRODUCTO */}
+
+                    <div className="col-md-4">
+
+                      <select
+                        className="form-select"
+                        value={ing.producto}
+                        onChange={(e) =>
+                          handleIngredienteChange(
+                            index,
+                            'producto',
+                            e.target.value
+                          )
+                        }
+                        required
+                      >
+
+                        <option value="">
+                          Seleccione producto
                         </option>
 
-                      ))}
+                        {productos.map(
+                          (prod) => (
 
-                    </select>
+                            <option
+                              key={prod._id}
+                              value={prod._id}
+                            >
+
+                              {prod.nombre}
+                              {' '}
+                              (
+                              {prod.unidad}
+                              )
+
+                            </option>
+                          )
+                        )}
+
+                      </select>
+
+                    </div>
+
+                    {/* CANTIDAD */}
+
+                    <div className="col-md-2">
+
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Cantidad"
+                        value={ing.cantidad}
+                        onChange={(e) =>
+                          handleIngredienteChange(
+                            index,
+                            'cantidad',
+                            e.target.value
+                          )
+                        }
+                        required
+                      />
+
+                    </div>
+
+                    {/* PRECIO */}
+
+                    <div className="col-md-3">
+
+                      <input
+                        type="text"
+                        className="form-control"
+                        disabled
+                        value={
+                          producto
+                            ? `$${producto.precioConIVA}`
+                            : ''
+                        }
+                      />
+
+                    </div>
+
+                    {/* SUBTOTAL */}
+
+                    <div className="col-md-2">
+
+                      <input
+                        type="text"
+                        className="form-control"
+                        disabled
+                        value={`$${subtotal}`}
+                      />
+
+                    </div>
+
+                    {/* ELIMINAR */}
+
+                    <div className="col-md-1">
+
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() =>
+                          eliminarIngrediente(
+                            index
+                          )
+                        }
+                      >
+                        X
+                      </button>
+
+                    </div>
 
                   </div>
-
-                  {/* CANTIDAD */}
-
-                  <div className="col-md-4">
-
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="Cantidad"
-                      value={ing.cantidad}
-                      onChange={(e) =>
-                        handleIngredienteChange(
-                          index,
-                          'cantidad',
-                          e.target.value
-                        )
-                      }
-                      required
-                    />
-
-                  </div>
-
-                  {/* ELIMINAR */}
-
-                  <div className="col-md-2">
-
-                    <button
-                      type="button"
-                      className="btn btn-danger"
-                      onClick={() =>
-                        eliminarIngrediente(index)
-                      }
-                    >
-                      X
-                    </button>
-
-                  </div>
-
-                </div>
-              )
+                );
+              }
             )}
-
-            {/* AGREGAR */}
 
             <button
               type="button"
@@ -415,6 +1171,40 @@ const Menus = () => {
 
           </div>
 
+          {/* COSTOS */}
+
+          <div className="col-12 mt-4">
+
+            <div className="card p-3">
+
+              <h5>
+                Costos
+              </h5>
+
+              <p>
+                <strong>
+                  Costo Total:
+                </strong>
+                {' '}
+                $
+                {calcularCostoTotal()
+                  .toFixed(2)}
+              </p>
+
+              <p>
+                <strong>
+                  Precio Venta:
+                </strong>
+                {' '}
+                $
+                {calcularPrecioVenta()
+                  .toFixed(2)}
+              </p>
+
+            </div>
+
+          </div>
+
           {/* BOTONES */}
 
           <div className="col-12">
@@ -423,9 +1213,11 @@ const Menus = () => {
               type="submit"
               className="btn btn-success"
             >
+
               {editandoId
                 ? 'Actualizar'
                 : 'Guardar'}
+
             </button>
 
             {editandoId && (
@@ -460,8 +1252,13 @@ const Menus = () => {
             <tr>
 
               <th>Nombre</th>
-              <th>Descripción</th>
+
               <th>Rinde</th>
+
+              <th>Costo</th>
+
+              <th>Venta</th>
+
               <th>Ingredientes</th>
 
               {!soloLectura &&
@@ -478,15 +1275,24 @@ const Menus = () => {
 
               <tr key={menu._id}>
 
-                <td>{menu.nombre}</td>
-
                 <td>
-                  {menu.descripcion}
+                  {menu.nombre}
                 </td>
 
                 <td>
                   {menu.rendimientoPersonas}
-                  {' '}personas
+                  {' '}
+                  personas
+                </td>
+
+                <td>
+                  $
+                  {menu.costoTotal?.toFixed(2)}
+                </td>
+
+                <td>
+                  $
+                  {menu.precioVenta?.toFixed(2)}
                 </td>
 
                 <td>
@@ -528,7 +1334,9 @@ const Menus = () => {
                     <button
                       className="btn btn-danger btn-sm ms-2"
                       onClick={() =>
-                        handleEliminar(menu._id)
+                        handleEliminar(
+                          menu._id
+                        )
                       }
                     >
                       Eliminar
@@ -553,4 +1361,3 @@ const Menus = () => {
 };
 
 export default Menus;
-
