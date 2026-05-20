@@ -6,7 +6,7 @@ import Usuarios from './pages/Usuarios';
 import Proveedores from './pages/proveedores';
 import Clientes from './pages/Clientes';
 import Productos from './pages/productos';
-import Administracion from './pages/Administracion';
+import Menu from './pages/Menu';
 import Bienvenida from './pages/Bienvenida';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
@@ -34,8 +34,8 @@ const AppRoutes = () => {
       <Route path="/productos" element={
         <PrivateRoute><Productos /></PrivateRoute>
       } />
-      <Route path="/administracion" element={
-        <PrivateRoute><Administracion /></PrivateRoute>
+      <Route path="/Menu" element={
+        <PrivateRoute><Menu /></PrivateRoute>
       } />
     </Routes>
   );
