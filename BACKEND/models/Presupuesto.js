@@ -1,5 +1,33 @@
 const mongoose = require('mongoose');
 
+const menuPresupuestoSchema = new mongoose.Schema({
+
+  menu: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Menu',
+    required: true
+  },
+
+  cantidad: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+
+  precioUnitario: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  subtotal: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+
+});
+
 const presupuestoSchema = new mongoose.Schema({
 
   cliente: {
@@ -15,32 +43,31 @@ const presupuestoSchema = new mongoose.Schema({
 
   cantidadPersonas: {
     type: Number,
-    required: true
+    required: true,
+    min: 1
   },
 
-  menus: [
-    {
-      menu: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Menu'
-      },
-
-      cantidad: Number,
-
-      precioUnitario: Number,
-
-      subtotal: Number
-    }
-  ],
+  menus: [menuPresupuestoSchema],
 
   total: {
     type: Number,
     default: 0
   },
 
+  observaciones: {
+    type: String,
+    trim: true
+  },
+
   estado: {
     type: String,
-    enum: ['pendiente', 'aprobado', 'rechazado'],
+
+    enum: [
+      'pendiente',
+      'aprobado',
+      'rechazado'
+    ],
+
     default: 'pendiente'
   }
 
@@ -48,4 +75,7 @@ const presupuestoSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Presupuesto', presupuestoSchema);
+module.exports = mongoose.model(
+  'Presupuesto',
+  presupuestoSchema
+);
