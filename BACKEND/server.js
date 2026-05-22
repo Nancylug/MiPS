@@ -133,6 +133,7 @@ const usuarioRoutes = require('./routes/usuarios');
 const categoriaRoutes = require('./routes/categorias');
 const presupuestoRoutes = require('./routes/presupuestos');
 
+
 const app = express();
 
 app.use(cors());
@@ -307,6 +308,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/menus', menuRoutes);
 app.use('/api/categorias', categoriaRoutes);
 app.use('/api/presupuestos', presupuestoRoutes);
+
 
 
 // ===============================
