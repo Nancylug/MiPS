@@ -10,6 +10,7 @@ import Menu from './pages/Menu';
 import Bienvenida from './pages/Bienvenida';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import Presupuestos from './pages/Presupuestos';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -37,7 +38,9 @@ const AppRoutes = () => {
       <Route path="/Menu" element={
         <PrivateRoute><Menu /></PrivateRoute>
       } />
+      <Route path="/presupuestos" element={<Presupuestos />} />
     </Routes>
+    
   );
 };
 
